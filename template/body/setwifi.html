@@ -1,0 +1,37 @@
+{% extends "index.html" %}
+{% block body %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+
+
+    <!-- Main content -->
+    <section class="content" style="max-width: 80%">
+        <div class="box box-solid box-primary" style="margin-top: 30px;">
+            <div class="box-header with-border">
+                <p class="box-title" style="font-size:30px">SetWiFi</p>
+            </div>
+            <div class="box-body text-center" style="margin-top:30px ">
+
+                <table class="table table-bordered table-hover" >
+                    <tr>  
+                        <td><h3 class="text-light-blue">WIFI NAME : </h3></td>
+                        <td><h3 class="text-light-blue">{{wifi_name_now}}</h3></td>
+                    </tr>
+                    <tr> 
+                        <td><h3 class="text-green">STATUS : </h3 ></td>
+                        <td><h3 class="text-green">CONNECTED</h3></td>
+                    </tr>
+                    <tr> 
+                        <td><h3 class="text-red">IP : </h3></td>
+                        <td><h3 class="text-red">{{wifi_ip}}</h3></td>
+                    </tr>
+                </table> 
+            
+
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+
+</div>
+{% endblock %}

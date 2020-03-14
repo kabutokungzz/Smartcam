@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+{% block body %}
+
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="box box-primary" style="margin-top: 2px;">
+            <div class="box-header with-border">
+                <p class="box-title fa fa-camera" style="font-size:30px">Camera</p>
+            </div>
+
+            <div class="box-body" style="margin-top:2px;">
+                <img class='img-responsive center-block box box-solid box-primary' style='width:65%; ' src="{{ url_for('video_feed') }}" >
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+
+</div>
+
+
+{% endblock %}

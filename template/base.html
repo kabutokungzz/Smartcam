@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>My Store</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='w3.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='Inconsolata.css') }}">
+  </head>
+  <style>
+      body, html {
+        height: 100%;
+        font-family: "Inconsolata", sans-serif;
+      }
+      
+      .bgimg {
+        background-position: center;
+        background-size: cover;
+        background-image: url("/w3images/coffeehouse.jpg");
+        min-height: 75%;
+      }
+      
+      .menu {
+        display: none;
+      }
+      table,tr,td{
+        border: solid 1px black;
+      }
+      .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50vw;
+        height: auto;
+      }
+      
+  </style>
+<body>
+  {% include 'component/menu.html' %}
+{% block body %}
+{% endblock %}
+</body>

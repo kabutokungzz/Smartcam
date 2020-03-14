@@ -1,0 +1,62 @@
+{% extends "index.html" %}
+{% block body %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Report
+      </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content" style="background-color: white;">
+      <div class="row">
+        <div class="col-xs-12">
+            <!-- /.box-header -->
+            <div class="box box-primary"><br>
+                <table id="example2" class="table table-bordered table-hover" >
+                    <thead>
+                    <tr>
+                      <th >No.</th>
+                      <th>Id.</th>
+                      <th>Filename</th>
+                      <th>Object Detected</th>
+                      <th>Line Status</th>
+                      <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if report_select == null %}
+                    <tr>
+                      <td colspan="5" align="center">NO RESULT DATA!!</td>
+                    </tr>
+                    {% else %}
+                    {% for report in report_select%}
+                    <tr>
+                      <td align="center">{{report[0]}}</td>
+                      <td align="center">{{report[1]}}</td>
+                      <td  align="center"> <img class='img-responsive' src="{{url_for('static', filename=report[2]  )}}" style="width: 10vw; height: 10vw; " /> </td>
+                      <td align="center">{{report[3]}}</td>
+                      {% if report[4] == '1' %}
+                      <td  align="center">Send</td>
+                      {% else %}
+                      <td  align="center">Can't Send</td>
+                      {% endif %}
+                      <td align="center">{{report[5]}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </section>
+    <!-- /.content -->
+  </div>
+  {% endblock %}
