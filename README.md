@@ -1,4 +1,5 @@
 # Smartcam
+<img src="doc/raspberrypi-smartcam-picam.jpg">
 Last update : 03/16/2020
 
 # Introduction
