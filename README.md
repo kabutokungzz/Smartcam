@@ -1,5 +1,4 @@
 # Smartcam
-
 Last update : 03/16/2020
 
 # Introduction
