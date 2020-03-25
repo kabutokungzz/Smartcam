@@ -1,12 +1,13 @@
 # Smartcam
+<img src="doc/raspberrypi-smartcam-picam.jpg">
 Last update : 03/16/2020
 
 # Introduction
-
+<img src="doc/ptt-detect.jpg">
 Smartcam is a Open-Source for security camera using computer vision Tensorflow lite or intel neural compute stick for object detection and tracking
 
 # Hardware
-1. Rapberry pi 3B + or 4
+1. Rapberry pi 3B+ or 4
 2. Camera (USB ,RTSP)
 3. Intel neural compute stick ( option )
 
