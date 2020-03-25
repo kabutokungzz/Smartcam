@@ -2,7 +2,75 @@
 {% block body %}
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
+<style>
+.containers {
+  /* display: block; */
+  position: relative;
+  padding-left: 25px;
+  margin-bottom: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 
+/* Hide the browser's default checkbox */
+.containers input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmarks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+.containers:hover input ~ .checkmarks {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.containers input:checked ~ .checkmarks {
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmarks:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.containers input:checked ~ .checkmarks:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.containers .checkmarks:after {
+  left: 6px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+</style>
 
     <!-- Main content -->
     <section class="content" style="max-width: 100%">
@@ -39,6 +107,7 @@
                             <input  type="text" name="Rtsp_text" class="form-control" id="rtsptext" value="{{setting_value[0][2]}}" readonly>
                         </div>
                     </div>
+
                     <div class="form-group " style="margin-bottom:10px">
                         <label class="col-sm-2 control-label" for="camres">Camera Resolution:</label>
                         <div class="col-sm-10">
@@ -118,12 +187,134 @@
                                 </div>
                               </table>
                     </div>
+
+
                     <div class="form-group " style="margin-bottom:10px">
                         <label class="col-sm-2 control-label" for="Line">LINE Notification Token:</label>
                         <div class="col-sm-10">
                             <input type="text" name="line_alert" class="form-control" value="{{setting_value[0][5]}}">
                         </div>
                     </div>
+                    
+                    <div class="form-group " style="margin-bottom:10px">
+                      <label class="col-sm-2 control-label" for="Line">LINE Alert Timer:</label>
+                      <div class="col-sm-10">
+                        <input id="allday" style="height: 20px;width: 20px;" type="checkbox" onchange="check()" value="{{allday}}" {{daywork_check[10]}}><label style="margin-left: 5px;">Allday</label>
+
+                        <label class="containers">Monday
+                          <input id="monday" type="checkbox" name='Monday' value="1" {{daywork_check[0]}} >
+                          <span class="checkmarks"></span>
+                        </label>
+                        <label class="containers">Tuesday
+                          <input id="tuesday" type="checkbox" name='Tuesday' value="1" {{daywork_check[1]}}>
+                          <span class="checkmarks"></span>
+                        </label>
+                        <label class="containers">Wednesday
+                          <input id="wednesday" type="checkbox" name='Wednesday' value="1" {{daywork_check[2]}}>
+                          <span class="checkmarks"></span>
+                        </label>
+                        <label class="containers">Thursday
+                          <input id="thursday" type="checkbox" name='Thursday' value="1" {{daywork_check[3]}}>
+                          <span class="checkmarks"></span>
+                        </label>
+                        <label class="containers">Friday
+                          <input id="friday" type="checkbox" name='Friday' value="1" {{daywork_check[4]}}>
+                          <span class="checkmarks"></span>
+                        </label>
+                        <label class="containers">Saturday
+                          <input id="saturday" type="checkbox" name='Saturday' value="1" {{daywork_check[5]}}>
+                          <span class="checkmarks"></span>
+                        </label>
+                        <label class="containers">Sunday
+                          <input id="sunday" type="checkbox" name='Sunday' value="1" {{daywork_check[6]}}>
+                          <span class="checkmarks"></span>
+                        </label>
+
+
+                        <!-- <input id="monday" class="flat-red" type="checkbox" name='Monday' value="1" {{daywork_check[0]}} ><label style="margin-left: 5px;">Monday</label> -->
+                        <!-- <input id="tuesday" class="flat-red" type="checkbox" name='Tuesday' value="1" {{daywork_check[1]}} ><label style="margin-left: 5px;">Tuesday</label>
+                        <input id="wednesday" class="flat-red" type="checkbox" name='Wednesday' value="1" {{daywork_check[2]}} ><label style="margin-left: 5px;">Wednesday</label>
+                        <input id="thursday" class="flat-red" type="checkbox" name='Thursday' value="1" {{daywork_check[3]}} ><label style="margin-left: 5px;">Thursday</label>
+                        <input id="friday" class="flat-red" type="checkbox" name='Friday' value="1" {{daywork_check[4]}} ><label style="margin-left: 5px;">Friday</label>
+                        <input id="saturday" class="flat-red" type="checkbox" name='Saturday' value="1" {{daywork_check[5]}} ><label style="margin-left: 5px;">Saturday</label>
+                        <input id="sunday" class="flat-red" type="checkbox" name='Sunday' value="1" {{daywork_check[6]}} ><label style="margin-left: 5px;">Sunday</label> -->
+                      </div>
+                      <label class="col-sm-2 control-label" for="Line"></label>
+                      <div class="col-sm-1" style="margin-top: 5px;">
+                        <input style="width: 20px;height: 20px;" type="checkbox" name="alltime" id="alltime" value="{{alltime}}" onchange="checktime()"><label style="margin-left: 5px;">AllTime</label>
+                        <input type="hidden" id="hiden_time" value="{{daywork_check[9]}}">
+                      </div>
+                      <div class="col-sm-2">
+                        <input type="text" class="form-control timepicker" name="st_time" value="{{daywork_check[7]}}" id="time1">
+                      </div>
+                      <div class="col-sm-2">
+                        <input type="text" class="form-control timepicker" name="en_time" value="{{daywork_check[8]}}" id="time2">
+                      </div>
+                      <script>
+                              //ทำ alltime
+                              var alltime_1 = document.getElementById("hiden_time").value;
+                              //console.log(alltime_1);
+                              if(alltime_1 == "checked"){
+                                timesdis()
+                                document.getElementById("alltime").checked = true;
+                              }
+                              
+                              function checktime(){
+                                var alltime = document.getElementById("alltime").value;
+                                console.log(alltime);
+                                if(alltime == 0){
+                                  document.getElementById("alltime").value = 1;
+                                  timesdis()
+                                }else if(alltime == 1){
+                                  document.getElementById("alltime").value = 0;
+                                  timesable()
+                                }
+                              }
+
+                              function timesdis(){
+                                document.getElementById("time1").disabled = true;
+                                document.getElementById("time2").disabled = true;
+                              }
+                              function timesable(){
+                                document.getElementById("time1").disabled = false;
+                                document.getElementById("time2").disabled = false;
+                              }
+
+
+
+                              function check(){
+                                var allday = document.getElementById("allday").value;
+                                // console.log(allday);
+                                if(allday == 0){
+                                  document.getElementById("allday").value = 1;
+                                  all01()
+                                }else if(allday == 1){
+                                  document.getElementById("allday").value = 0;
+                                  all00()
+                                }
+                              }
+
+                              function all01(){
+                                  document.getElementById("monday").checked = true;
+                                  document.getElementById("tuesday").checked = true;
+                                  document.getElementById("wednesday").checked = true;
+                                  document.getElementById("thursday").checked = true;
+                                  document.getElementById("friday").checked = true;
+                                  document.getElementById("saturday").checked = true;
+                                  document.getElementById("sunday").checked = true;
+                              }
+                              function all00(){
+                                document.getElementById("monday").checked = false;
+                                  document.getElementById("tuesday").checked = false;
+                                  document.getElementById("wednesday").checked = false;
+                                  document.getElementById("thursday").checked = false;
+                                  document.getElementById("friday").checked = false;
+                                  document.getElementById("saturday").checked = false;
+                                  document.getElementById("sunday").checked = false;
+                              }
+                              
+                    </script>
+                  </div>
 
                     <div class="form-group " style="margin-bottom:10px">
                       <label class="col-sm-2 control-label" for="Line">Hardware accelerator:</label>

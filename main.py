@@ -29,19 +29,20 @@ import numpy as np
 conn = sqlite3.connect('/home/pi/smartcam/smart_cam.db',check_same_thread=False)
 print ("Opened database successfully")
 ##########################################################
-
+##########################Global variable################################
 # os.system("export DISPLAY=:0")
 outputFrame = None
 wifi_status = 0
 wifi_name_now =""
+line_alert_time = 0
 #first_time load database
 first_con = conn.cursor()
 first_con.execute("SELECT * FROM smart_setting")
 _setting = first_con.fetchall()
 first_con.execute("SELECT * FROM select_class")
 _class = first_con.fetchall()
-#
 _reset = 0
+#########################################################
 lock = threading.Lock()
 
 # initialize a flask object
@@ -127,6 +128,52 @@ def setting():
 		conn.execute("UPDATE select_class SET select_classname='"+truck+"' Where class = '%s' "%('truck'))
 		conn.commit()
 		###############SELECT CLASS######################
+		# print(request.form['st_time'],request.form['en_time'])
+		###############DayWork###########################
+		try:
+			mon = request.form['Monday']
+		except:
+			mon = str(0)
+		try:
+			tue = request.form['Tuesday']
+		except:
+			tue = str(0)
+		try:
+			wed = request.form['Wednesday']
+		except:
+			wed = str(0)
+		try:
+			thu = request.form['Thursday']
+		except:
+			thu = str(0)
+		try:
+			fri = request.form['Friday']
+		except:
+			fri = str(0)
+		try:
+			sat = request.form['Saturday']
+		except:
+			sat = str(0)
+		try:
+			sun = request.form['Sunday']
+		except:
+			sun = str(0)
+		try:
+			alltime = request.form['alltime']
+		except:
+			alltime = str(0)
+		try:
+			st_time = request.form['st_time']
+		except:
+			st_time = str(0)
+		try:
+			en_time = request.form['en_time']
+		except:
+			en_time = str(0)								
+		conn.execute("UPDATE smart_daywork SET monday='"+mon+"' , tuesday='"+tue+"',wednesday='"+wed+"',\
+		thursday='"+thu+"',friday='"+fri+"',saturday='"+sat+"',sunday='"+sun+"',st_time='"+st_time+"',en_time='"+en_time+"',alltime='"+alltime+"' ")
+		conn.commit()
+		#################################################
 		#print(person,cat,dog,brid,car,motorcycle,bicycle,bicycle,truck)
 		# if cnn_check[0] != cnn:
 		# os.system("sudo reboot")
@@ -137,7 +184,6 @@ def setting():
 		cur.execute("SELECT * FROM smart_setting") 
 		setting_value = cur.fetchall()
 		################################################
-		cur = conn.cursor()
 		cur.execute("SELECT * FROM select_class") 
 		select = cur.fetchall()
 		select_class = []
@@ -147,13 +193,44 @@ def setting():
 			else:
 				select_class.append('0')
 		################################################
+		cur.execute("SELECT * FROM smart_daywork")
+		daywork = cur.fetchall() #column ที่ 0 คือ id
+		allday_check = 0
+		daywork_check = []
+		for i in range(1,11):
+			if i == 10 :
+				
+				if daywork[0][i]:
+					daywork_check.append("checked")
+					alltime = 1
+				else:
+					daywork_check.append(" ")
+					alltime = 0
+			elif i < 8 :
+				if daywork[0][i]:
+					daywork_check.append("checked")
+					allday_check += 1
+				else:
+					daywork_check.append(" ")
+			else:
+				daywork_check.append(daywork[0][i])
+		#เช็คว่าให้แจ้งเตือนทุกวันหรือไม่ ถ้าใช่จะทำการ checked หน้า Allday
+		if allday_check >= 7:
+			daywork_check.append("checked")
+			allday = 1
+		else:
+			daywork_check.append(" ")
+			allday = 0
+		# print(daywork)
+		# print(daywork_check)
+		################################################
 		if setting_value[0][6] == 1:
 			cnn = 'checked'
 		else:
 			cnn = ''
 		# print(setting_value)
 		#print(select_class)
-		return render_template('body/settings.html',setting_value=setting_value,select_class=select_class,Cnn=cnn)
+		return render_template('body/settings.html',setting_value=setting_value,select_class=select_class,Cnn=cnn,daywork_check=daywork_check,alltime=alltime,allday=allday)
 
 ##########################################################################################################
 def insert_wifi(ssid,password):
@@ -199,10 +276,12 @@ def argsparser():
     return parser.parse_args()
 ##########################################################################################################
 def display_show(rects,t1_image,t2_image,ckname,frame_q,objects_first,notify,ct):
+	global line_alert_time
 	ckid = ''
 	text=''
 	timea=10
 	objects = ct.update(rects)
+	cur = conn.cursor()
 	for (objectID, centroid) in objects.items():
 		text = "{}".format(objectID)
 		ckid = ckid + text + ','
@@ -211,7 +290,7 @@ def display_show(rects,t1_image,t2_image,ckname,frame_q,objects_first,notify,ct)
 	############################
 	#Inset Database
 	if len(objects) > 0 and ckname != '':
-		if (int(t1_image-t2_image) >= timea or objects_first == 0) and rects != None :
+		if (int(t1_image-t2_image) >= timea or objects_first == 0) and rects != None and line_alert_time == 1 :
 			#ลบ , ตัวสุดท้ายออก
 			ckname = ckname[:-1]
 			ckid = ckid[:-1]
@@ -572,17 +651,53 @@ def video_feed():
 	# return the response generated along with the specific media
 	# type (mime type)
 	return Response(generate(),mimetype = "multipart/x-mixed-replace; boundary=frame")
-##########################################################################################################
-
+########################################################################
 def check_sql_onload():
-	global _reset,_setting,_class
+	global _reset,_setting,_class,line_alert_time
 	cur = conn.cursor()
 	cur.execute("SELECT * FROM smart_setting")
 	setting_setting = cur.fetchall()
 
 	cur.execute("SELECT * FROM select_class")
 	setting_class = cur.fetchall()
-
+	################################################################
+	#####################ตรวจสอบการแจ้งเตือนบน Line วัน/เวลา#######################
+	x = datetime.datetime.now()
+	x = x.strftime("%A")
+	cur.execute("SELECT * FROM smart_daywork")
+	main_daywork = cur.fetchall()
+	_daycheck = day_check(main_daywork,x)
+	# print(setting_cnn[0])
+	_timenow = datetime.datetime.now()
+	# _timenow = _timenow.strftime("%I:%M %p")
+	_timenow = _timenow.strftime("%H:%M")
+	# print(_timenow) # เวลาปัจจุบัน
+	cur.execute("SELECT * FROM smart_daywork")
+	_timedatabase = cur.fetchall()
+	if _timedatabase[0][10] != 1:
+		st_time = _timedatabase[0][8] #เวลาเริ่มต้นที่ให้ทำงาน
+		st_time = datetime.datetime.strptime(st_time, "%I:%M %p")
+		st_time = datetime.datetime.strftime(st_time, "%H:%M")
+		en_time = _timedatabase[0][9] #เวลาสิ้นหลุดที่ให้ทำงาน
+		en_time = datetime.datetime.strptime(en_time, "%I:%M %p")
+		en_time = datetime.datetime.strftime(en_time, "%H:%M")
+	# print(st_time , en_time)
+	# ถ้า 0 คือวันนี้แจ้งเตือน 1 คือไม่แจ้งเตือน
+	if _daycheck == 0 :
+		# ถ้าวันนี้ ติ้ก AllTime ไม่ต้องเช็คเวลา
+		if _timedatabase[0][10] == 1 :
+			line_alert_time = 1
+		else:
+			# ถ้าไม่มีการติ้ก Alltime ให้เช็คจากเวลา
+			# ถ้า เวลาปัจจุบันน้อยกว่าเวลาที่ตั้งค่า
+			if _timenow < st_time and _timenow > en_time :
+				line_alert_time = 1
+			else:
+				line_alert_time = 0
+	else:
+		line_alert_time = 0
+	# ถ้า เวลาปัจจุบันมากกว่า เวลาที่ให้เริ่มทำงาน
+	################################################################
 	if( _setting == setting_setting) and ( _class == setting_class):
 		_reset = 0
 	else:
@@ -599,6 +714,30 @@ def check_sql_onload():
 		_class = setting_class
 	#print(_reset)
 
+def day_check(main_daywork,xday):
+    day_reture = 0
+    if xday == "Monday":
+        if main_daywork[0][1] == 0 : None
+        else: day_reture = 1
+    elif xday == "Tuesday":
+        if main_daywork[0][2] == 0 : None
+        else: day_reture = 1
+    elif xday == "Wednesday":
+        if main_daywork[0][3] == 0 : None
+        else: day_reture = 1
+    elif xday == "Thursday":
+        if main_daywork[0][4] == 0 : None
+        else: day_reture = 1
+    elif xday == "Friday":
+        if main_daywork[0][5] == 0 : None
+        else: day_reture = 1
+    elif xday == "Saturday":
+        if main_daywork[0][6] == 0 : None
+        else: day_reture = 1
+    elif xday == "Sunday":
+        if main_daywork[0][7] == 0 : None
+        else: day_reture = 1
+    return day_reture
 def main():
 	global wifi_name_now,wifi_status
 	status = os.popen('iwconfig wlan0').read()
@@ -614,7 +753,7 @@ def main():
 	cur = conn.cursor()
 	cur.execute("SELECT cnn FROM smart_setting") 
 	setting_cnn = cur.fetchone()
-	# print(setting_cnn[0])
+	#ตรวจสอบ CNN ที่ใช้
 	if setting_cnn[0] == 0:
 		t = threading.Thread(target=TFlite, args=(32,))
 		t.daemon = True
@@ -630,6 +769,6 @@ def main():
 if __name__ == '__main__':
 	main()
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=check_sql_onload, trigger="interval", seconds=1)
+scheduler.add_job(func=check_sql_onload, trigger="interval", seconds=2)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())

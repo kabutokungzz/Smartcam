@@ -24,6 +24,8 @@
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="../static/dist/css/skins/_all-skins.min.css">
   <link rel="stylesheet" href="../static/style_photo.css">
+   <!-- Bootstrap time Picker -->
+   <link rel="stylesheet" href="../static/plugins/timepicker/bootstrap-timepicker.min.css">
 
   <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
@@ -78,7 +80,8 @@
 <!-- iCheck 1.0.1 -->
 <script src="../static/plugins/iCheck/icheck.min.js"></script>
 <!-- <link rel="../static/dist/sweetalert.min.css"> -->
-
+<!-- bootstrap time picker -->
+<script src="../static/plugins/timepicker/bootstrap-timepicker.min.js"></script>
 <!-- page script -->
 <script>
   $(function () {
@@ -107,7 +110,14 @@
       checkboxClass: 'icheckbox_flat-green',
       radioClass   : 'iradio_flat-green'
     })
+    //Timepicker
+    $('.timepicker').timepicker({
+      showInputs: false,
+      use24hours: true,
+      format: 'HH:mm'
+    })
 </script>
+
 
 
 </body>
